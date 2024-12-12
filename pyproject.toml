@@ -1,0 +1,11 @@
+[project]
+name = "macros"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ipykernel>=6.29.5",
+    "ipython>=8.30.0",
+    "mypy>=1.13.0",
+]
