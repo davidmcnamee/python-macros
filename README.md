@@ -15,6 +15,15 @@ You don't need to add another build step, just run your code as normal. As soon 
 
 Python is a dynamic language, so you can technically do anything... if you don't care about type hinting. But if you're a sane person, then you *must* care about type hinting, and therefore you might care about macros 😛 
 
+I like to think of Python as:
+* runtime code can talk to runtime code (normal)
+* type checking code can talk to type checking code (normal)
+* type checking code can talk to type runtime code (e.g. dataclasses)
+* ...but runtime code can't talk to type hinting code
+
+^ macros fill the gap on that last missing step
+
+
 ### Example Use Cases
 
 * If you have a decorator that's impossible to fit with type hints (python generics are nowhere near as powerful as typescript generics, for example); make it a macro instead!
