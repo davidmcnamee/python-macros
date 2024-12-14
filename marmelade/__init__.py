@@ -4,7 +4,7 @@ import re
 from inspect import FrameInfo, getsource, stack
 from pathlib import Path
 import sys
-from typing import Callable
+from typing import Callable, Concatenate, ParamSpec
 
 FILE_PREFIX = '''
 """
@@ -37,17 +37,19 @@ def import_generated_func(source_code: str, decorator_frame: FrameInfo, func_nam
         with open(decorator_frame.filename, "w") as f:
             f.write(import_stmt+updated_source_code)
 
+P = ParamSpec('P')
+
 # this code is gross, badly needs a refactor
 def macro():
-    def _macro(proc_macro_func: Callable[[str], str]):
-        def decorator_func[T](generated: T | None = None) -> Callable[..., T]:
+    def _macro(proc_macro_func: Callable[Concatenate[str, P], str]):
+        def decorator_func[T](*args: P.args, generated: T | None = None, **kwargs: P.kwargs) -> Callable[..., T]:
             source_code = getsource(inspect.currentframe().f_back)
             decorator_frame = stack()[-3]
             # TODO: could use `__session__ or __vsc_ipynb_file__` to determine file name of jupyter notebook
             # https://github.com/jupyterlab/jupyterlab/issues/16282
 
             def decorator(func: Callable) -> T:
-                new_code = proc_macro_func(getsource(func))
+                new_code = proc_macro_func(getsource(func), *args, **kwargs)
                 new_code = re.sub(rf"@{proc_macro_func.__name__}\(.*?\)", "", new_code, count=1)
                 with open(Path(decorator_frame.filename).parent / "__macros__.py", "w") as f:
                     f.write(FILE_PREFIX)
