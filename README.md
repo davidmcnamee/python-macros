@@ -18,7 +18,7 @@ Python is a dynamic language, so you can technically do anything... if you don't
 I like to think of Python as:
 * runtime code can talk to runtime code (normal)
 * type checking code can talk to type checking code (normal)
-* type checking code can talk to type runtime code (e.g. dataclasses)
+* type checking code can talk to runtime code (e.g. dataclasses)
 * ...but runtime code can't talk to type hinting code
 
 ^ macros fill the gap on that last missing step

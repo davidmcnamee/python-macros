@@ -11,3 +11,4 @@ wheels/
 .ipynb_checkpoints/
 .mypy_cache/
 __macros__.py
+.env
