@@ -1,6 +1,6 @@
 from .__macros__ import my_func
 import re
-from marmelade import macro
+from mozzarella import macro
 
 @macro()
 def my_macro(code: str) -> str:
