@@ -30,7 +30,7 @@ assert my_other_func(1, 2) == "-4"
 
 @my_macro(gen=GenStuff, x=7)
 class Stuff:
-    def __init__(self, c: int):
+    def __init__(self, c: int) -> None:
         self.c = c
 
     def my_method(self, a: int, b: int) -> int:
@@ -43,7 +43,7 @@ class Stuff:
 
 
 class NewClass(Stuff):
-    def whatever2(self):
+    def whatever2(self) -> None:
         a = self.my_method(1, 2)
         print(a)
 

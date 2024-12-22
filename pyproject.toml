@@ -6,5 +6,13 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "executing>=2.1.0",
-    "jurigged[develoop]>=0.6.0",
+]
+
+[tool.ruff.lint]
+select = ["ANN"]
+ignore = ["ANN401"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.4",
 ]

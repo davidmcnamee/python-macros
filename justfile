@@ -11,3 +11,7 @@ publish:
     rm -rf *.egg-info dist
     uv build
     uv publish
+
+lint:
+    uv run ruff check --fix --unsafe-fixes
+    uv run ruff format
