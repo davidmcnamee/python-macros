@@ -5,4 +5,6 @@ description = "Use procedural macros in Python"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "executing>=2.1.0",
+    "jurigged[develoop]>=0.6.0",
 ]
