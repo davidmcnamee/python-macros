@@ -1,6 +1,6 @@
 import re
 
-from mozzarella import macro
+from typed_macro import macro
 
 from .__macros__.types import GenStuff, gen_my_func, gen_my_other_func
 

@@ -1,5 +1,4 @@
-
-# Macros in Python
+# Typed macros in Python
 
 **Status**: like really early pre-alpha
 
@@ -24,7 +23,7 @@ I like to think of Python as:
 ^ macros fill the gap on that last missing step
 
 
-### Example Use Cases
+### Example use cases
 
 * If you have a decorator that's impossible to fit with type hints (python generics are nowhere near as powerful as typescript generics, for example); make it a macro instead!
   * E.g. you want to [Concatenate](https://docs.python.org/3/library/typing.html#typing.Concatenate) a kwarg to a paramspec, but it only supports positional arguments

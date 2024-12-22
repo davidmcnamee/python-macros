@@ -5,8 +5,8 @@ from pathlib import Path
 from types import FrameType
 from typing import Any, Callable
 
-from mozzarella.constants import FILE_PREFIX
-from mozzarella.util import get_generated_name
+from typed_macro.constants import FILE_PREFIX
+from typed_macro.util import get_generated_name
 
 _generated_files = set[Path]()
 

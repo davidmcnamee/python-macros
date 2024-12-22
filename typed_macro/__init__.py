@@ -17,15 +17,15 @@ from typing import (
 
 from executing.executing import Source
 
-from mozzarella.file_writers import (
+from typed_macro.file_writers import (
     get_or_create_macro_dir,
     write_to_runtime_file_and_import,
     write_to_stub_file,
 )
-from mozzarella.inline_codegen import (
+from typed_macro.inline_codegen import (
     add_inline_snippets_to_callsite_file,
 )
-from mozzarella.macro_codegen import (
+from typed_macro.macro_codegen import (
     create_type_stub,
     run_macro_and_postprocess,
 )

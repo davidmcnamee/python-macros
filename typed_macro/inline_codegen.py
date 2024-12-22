@@ -4,7 +4,7 @@ from typing import Any, Callable, Iterable
 
 from executing.executing import EnhancedAST
 
-from mozzarella.util import (
+from typed_macro.util import (
     first_or_none,
     get_file_pos_from_line_col,
     get_generated_name,

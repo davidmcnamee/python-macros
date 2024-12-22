@@ -4,8 +4,8 @@ from typing import Any, Callable, Concatenate
 
 from executing.executing import EnhancedAST
 
-from mozzarella.constants import FILE_TEMPLATE
-from mozzarella.util import get_generated_name, is_absolute_import
+from typed_macro.constants import FILE_TEMPLATE
+from typed_macro.util import get_generated_name, is_absolute_import
 
 
 def run_macro_and_postprocess[**P](

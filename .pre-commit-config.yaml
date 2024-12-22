@@ -1,0 +1,10 @@
+repos:
+- repo: local
+  hooks:
+  - id: test-and-lint
+    name: Test and Lint
+    entry: sh -c 'just test && just lint'
+    language: system
+    files: .*
+    stages: [ pre-commit ]
+    pass_filenames: false
