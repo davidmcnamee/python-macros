@@ -47,8 +47,11 @@ def macro[**P, T](
             source_code = inspect.getsource(decorator_func_callsite.frame)
 
             # update decorator call and run codegen
-            updated_source_code = add_inline_snippets_to_callsite_file(
-                func_or_class, source_code, callsite_ast
+            add_inline_snippets_to_callsite_file(
+                func_or_class,
+                source_code,
+                callsite_ast,
+                filename=decorator_func_callsite.frame.f_code.co_filename,
             )
             runtime_definition_ast = run_macro_and_postprocess(
                 func_or_class,
@@ -68,8 +71,6 @@ def macro[**P, T](
                 func_or_class,
                 runtime_definition_ast,
             )
-            with open(decorator_func_callsite.frame.f_code.co_filename, "w") as f:
-                f.write(updated_source_code)
 
             return generated_func_or_class
 

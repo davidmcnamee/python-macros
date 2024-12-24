@@ -1,5 +1,7 @@
 import ast
+import atexit
 import re
+from itertools import chain, groupby
 from typing import Any, Callable, Iterable
 
 from executing.executing import EnhancedAST
@@ -12,32 +14,48 @@ from typed_macro.util import (
     one_or_none,
 )
 
+insert_statements: list[tuple[str, int, str]] = []
+
+
+def insert_all_statements() -> None:
+    insert_statements.sort(reverse=True)
+    for filename, group in groupby(insert_statements, key=lambda x: x[0]):
+        group = list(group)
+        with open(filename, "r") as f:
+            source_code = f.read()
+        for _, pos, insert_str in group:
+            source_code = source_code[:pos] + insert_str + source_code[pos:]
+        with open(filename, "w") as f:
+            f.write(source_code)
+
+
+atexit.register(insert_all_statements)
+
 
 def add_inline_snippets_to_callsite_file(
     func_or_class: Callable[..., Any] | type,
     source_code: str,
     callsite_ast: EnhancedAST,
-) -> str:
+    *,
+    filename: str,
+) -> None:
     """
     There are some code snippets that we need to add directly to the file where
     the macro decorator was called. This function takes the original source code
     and returns the modified source code with those snippets added.
     """
-    insert_statements: list[tuple[int, str]] = sorted(
-        [
-            *_maybe_insert_gen_kwarg_to_callsite_func_decorator(
-                func_or_class, callsite_ast, source_code
-            ),
-            *_maybe_insert_imports_to_macro_type_stubs(
-                func_or_class, callsite_ast, source_code
-            ),
-        ],
-        reverse=True,
+    insert_statements.extend(
+        (filename, pos, insert_str)
+        for pos, insert_str in _maybe_insert_gen_kwarg_to_callsite_func_decorator(
+            func_or_class, callsite_ast, source_code
+        )
     )
-
-    for pos, insert_str in insert_statements:
-        source_code = source_code[:pos] + insert_str + source_code[pos:]
-    return source_code
+    insert_statements.extend(
+        (filename, pos, insert_str)
+        for pos, insert_str in _maybe_insert_imports_to_macro_type_stubs(
+            func_or_class, callsite_ast, source_code
+        )
+    )
 
 
 def _maybe_insert_imports_to_macro_type_stubs(
@@ -75,14 +93,16 @@ def _maybe_insert_gen_kwarg_to_callsite_func_decorator(
     if isinstance(
         callsite_ast.parent, ast.FunctionDef | ast.ClassDef
     ) and not one_or_none(
-        kwarg for kwarg in callsite_ast.keywords if kwarg.arg == "gen"
+        arg
+        for arg in callsite_ast.args
+        if ast.unparse(arg) == get_generated_name(func_or_class)
     ):
-        first_kwarg = first_or_none(callsite_ast.keywords)
-        insert_str = f"gen={get_generated_name(func_or_class)}"
-        if first_kwarg is not None:
+        first_arg = first_or_none(chain(callsite_ast.args, callsite_ast.keywords))
+        insert_str = get_generated_name(func_or_class)
+        if first_arg is not None:
             insert_pos = get_file_pos_from_line_col(
-                first_kwarg.lineno,
-                first_kwarg.col_offset,
+                first_arg.lineno,
+                first_arg.col_offset,
                 source_code,
             )
             insert_str = insert_str + ", "
