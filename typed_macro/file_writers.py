@@ -59,10 +59,11 @@ def _import_from_path(module_name: str, file_path: str) -> Any:
 
 
 def _write_to_file_if_changes(file_path: Path, content: str) -> None:
-    with open(file_path, "r") as f:
-        cur_content = f.read()
-    if ast.unparse(ast.parse(cur_content)) == ast.unparse(ast.parse(content)):
-        return  # no changes, skip writing (to avoid unnecessary reloads in `uvicorn --reload` projects)
+    if file_path.exists():
+        with open(file_path, "r") as f:
+            cur_content = f.read()
+        if ast.unparse(ast.parse(cur_content)) == ast.unparse(ast.parse(content)):
+            return  # no changes, skip writing (to avoid unnecessary reloads in `uvicorn --reload` projects)
 
     with open(file_path, "w") as f:
         f.write(content)
