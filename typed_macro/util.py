@@ -36,10 +36,12 @@ def get_generated_name(func_or_class: Callable[..., Any] | type) -> str:
         return f"gen_{func_or_class.__name__}"
 
 
-def is_absolute_import(node: ast.stmt) -> bool:
-    return (isinstance(node, ast.ImportFrom) and node.level == 0) or isinstance(
-        node, ast.Import
-    )
+def is_absolute_import_that_doesnt_reference_macros(node: ast.stmt) -> bool:
+    return (
+        isinstance(node, ast.ImportFrom)
+        and node.level == 0
+        and "__macros__.types" not in ast.unparse(node)
+    ) or isinstance(node, ast.Import)
 
 
 def debounce[T](delay: float) -> Callable[[Callable[[T], None]], Callable[[T], None]]:

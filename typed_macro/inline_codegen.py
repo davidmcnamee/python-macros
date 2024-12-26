@@ -10,7 +10,7 @@ from typed_macro.util import (
     first_or_none,
     get_file_pos_from_line_col,
     get_generated_name,
-    is_absolute_import,
+    is_absolute_import_that_doesnt_reference_macros,
     one_or_none,
 )
 
@@ -71,7 +71,7 @@ def _maybe_insert_imports_to_macro_type_stubs(
     assert isinstance(callsite_ast, ast.Call)
     generated_name = get_generated_name(func_or_class)
     for node in ast.parse(source_code).body:
-        if not is_absolute_import(node) and re.search(
+        if not is_absolute_import_that_doesnt_reference_macros(node) and re.search(
             r"(\W|^)" + generated_name + r"(\W|$)", ast.unparse(node)
         ):
             return  # early return if already imported

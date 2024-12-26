@@ -5,7 +5,10 @@ from typing import Any, Callable, Concatenate
 from executing.executing import EnhancedAST
 
 from typed_macro.constants import FILE_TEMPLATE
-from typed_macro.util import get_generated_name, is_absolute_import
+from typed_macro.util import (
+    get_generated_name,
+    is_absolute_import_that_doesnt_reference_macros,
+)
 
 
 def run_macro_and_postprocess[**P](
@@ -97,9 +100,12 @@ def _convert_to_generated_name(
 
 def _copy_all_absolute_imports(source_code: str, new_node: ast.Module) -> None:
     for node in ast.parse(source_code).body:
-        if is_absolute_import(node) or (
+        if is_absolute_import_that_doesnt_reference_macros(node) or (
             isinstance(node, ast.If)
             # sometimes top-level if statements contain imports (like `if TYPE_CHECKING:`)
-            and any(is_absolute_import(child) for child in node.body)
+            and any(
+                is_absolute_import_that_doesnt_reference_macros(child)
+                for child in node.body
+            )
         ):
             new_node.body.insert(0, node)
