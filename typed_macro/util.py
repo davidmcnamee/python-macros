@@ -1,4 +1,6 @@
 import ast
+import threading
+from datetime import datetime
 from typing import Any, Callable, Iterable
 
 
@@ -38,3 +40,22 @@ def is_absolute_import(node: ast.stmt) -> bool:
     return (isinstance(node, ast.ImportFrom) and node.level == 0) or isinstance(
         node, ast.Import
     )
+
+
+def debounce[T](delay: float) -> Callable[[Callable[[T], None]], Callable[[T], None]]:
+    def _debounce(func: Callable[[T], None]) -> Callable[[T], None]:
+        last_call_time: dict[T, datetime] = {}
+
+        def flush(arg: T, called_at: datetime) -> None:
+            nonlocal last_call_time
+            if last_call_time[arg] > called_at:
+                return  # no-op
+            func(arg)
+
+        def wrapper(arg: T) -> None:
+            last_call_time[arg] = datetime.now()
+            threading.Timer(delay, flush, args=(arg, datetime.now())).start()
+
+        return wrapper
+
+    return _debounce

@@ -29,6 +29,7 @@ from typed_macro.macro_codegen import (
     create_type_stub,
     run_macro_and_postprocess,
 )
+from typed_macro.util import first_or_none
 
 
 def macro[**P, T](
@@ -37,7 +38,18 @@ def macro[**P, T](
     def decorator_func(
         gen: T | None = None, *args: P.args, **kwargs: P.kwargs
     ) -> Callable[..., T]:
-        decorator_func_callsite = Source.executing(inspect.stack()[-3].frame)
+        frame_info = first_or_none(
+            frame
+            for frame in inspect.stack()
+            if
+            (
+                # there is probably more exclusion logic to add here
+                frame.filename != "<frozen importlib._bootstrap>"
+                and not frame.filename.endswith("typed_macro/__init__.py")
+            )
+        )
+        assert frame_info is not None, "unexpected error: could not find frame info"
+        decorator_func_callsite = Source.executing(frame_info.frame)
         callsite_ast = decorator_func_callsite.node
         assert isinstance(
             callsite_ast, ast.Call
