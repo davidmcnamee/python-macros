@@ -71,9 +71,9 @@ def _maybe_insert_imports_to_macro_type_stubs(
     assert isinstance(callsite_ast, ast.Call)
     generated_name = get_generated_name(func_or_class)
     for node in ast.parse(source_code).body:
-        if not is_absolute_import_that_doesnt_reference_macros(node) and re.search(
-            r"(\W|^)" + generated_name + r"(\W|$)", ast.unparse(node)
-        ):
+        if not is_absolute_import_that_doesnt_reference_macros(
+            node, generated_name
+        ) and re.search(r"(\W|^)" + generated_name + r"(\W|$)", ast.unparse(node)):
             return  # early return if already imported
     yield 0, f"from .__macros__.types import {generated_name}\n"
 

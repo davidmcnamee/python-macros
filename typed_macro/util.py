@@ -36,11 +36,16 @@ def get_generated_name(func_or_class: Callable[..., Any] | type) -> str:
         return f"gen_{func_or_class.__name__}"
 
 
-def is_absolute_import_that_doesnt_reference_macros(node: ast.stmt) -> bool:
+def is_absolute_import_that_doesnt_reference_macros(
+    node: ast.stmt, generated_name: str
+) -> bool:
     return (
         isinstance(node, ast.ImportFrom)
         and node.level == 0
-        and "__macros__.types" not in ast.unparse(node)
+        and not (
+            "__macros__.types" in ast.unparse(node)
+            and generated_name in [alias.name for alias in node.names]
+        )
     ) or isinstance(node, ast.Import)
 
 

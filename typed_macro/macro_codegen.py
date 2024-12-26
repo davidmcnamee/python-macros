@@ -30,7 +30,11 @@ def run_macro_and_postprocess[**P](
         new_code = proc_macro_func(inspect.getsource(func_or_class), *args, **kwargs)
         new_node = ast.parse(new_code)
         _remove_all_macro_decorator_callsites(new_node, callsite_ast)
-        _copy_all_absolute_imports(source_code, new_node)
+        _copy_all_absolute_imports(
+            source_code,
+            new_node,
+            generated_name=get_generated_name(func_or_class),
+        )
         _convert_to_generated_name(new_node, func_or_class)
         return new_node
     except Exception as e:
@@ -98,13 +102,15 @@ def _convert_to_generated_name(
             child.name = get_generated_name(func_or_class)
 
 
-def _copy_all_absolute_imports(source_code: str, new_node: ast.Module) -> None:
+def _copy_all_absolute_imports(
+    source_code: str, new_node: ast.Module, *, generated_name: str
+) -> None:
     for node in ast.parse(source_code).body:
-        if is_absolute_import_that_doesnt_reference_macros(node) or (
+        if is_absolute_import_that_doesnt_reference_macros(node, generated_name) or (
             isinstance(node, ast.If)
             # sometimes top-level if statements contain imports (like `if TYPE_CHECKING:`)
             and any(
-                is_absolute_import_that_doesnt_reference_macros(child)
+                is_absolute_import_that_doesnt_reference_macros(child, generated_name)
                 for child in node.body
             )
         ):
