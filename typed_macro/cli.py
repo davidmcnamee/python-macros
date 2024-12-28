@@ -1,30 +1,59 @@
 import os
-import shutil
 import sys
 from pathlib import Path
-from typing import Annotated, Union
+from typing import Annotated, Iterable, Union
 
 import libcst as cst
 import typer
+from git import InvalidGitRepositoryError, Repo
 
 app = typer.Typer()
 
 Exclude = Annotated[list[str], typer.Option(help="Paths to exclude")]
 
 
+def get_git_tracked_py_files(directory: Path) -> Iterable[Path]:
+    try:
+        repo = Repo(directory, search_parent_directories=True)
+        tracked_files = repo.git.ls_files("*.py").splitlines()
+        untracked_files = repo.untracked_files
+        repo_root = Path(repo.git.rev_parse("--show-toplevel"))
+        return (
+            repo_root / file_name
+            for file_name in tracked_files + untracked_files
+            if file_name.endswith(".py")
+        )
+    except InvalidGitRepositoryError:
+        print(
+            f"No Git repository found in {directory} or any parent directories.",
+            file=sys.stderr,
+        )
+        return []
+
+
+COMMONLY_EXCLUDED = [".venv"]
+
+
 @app.command()
-def clean(
-    directory: Path = Path("."), exclude: Exclude = [".venv", "node_modules", ".git"]
-) -> None:
-    for root, _, files in os.walk(directory):
-        if any(root.startswith(e) or root.startswith("./" + e) for e in exclude):
+def clean(directory: Path = Path("."), exclude: Exclude = COMMONLY_EXCLUDED) -> None:
+    try:
+        py_files = get_git_tracked_py_files(directory)
+    except InvalidGitRepositoryError:
+        print("Not in a git repository, looking through all files", file=sys.stderr)
+        py_files = (
+            Path(root) / file
+            for root, _, files in os.walk(directory)
+            for file in files
+            if file.endswith(".py")
+        )
+
+    for file_path in py_files:
+        if any(
+            str(file_path).startswith(e) or str(file_path).startswith("./" + e)
+            for e in exclude
+        ):
             continue
-        for file_name in files:
-            if file_name.endswith("__macro__"):
-                shutil.rmtree(Path(root) / file_name)
-            if file_name.endswith(".py"):
-                file_path = Path(root) / file_name
-                remove_macro_references(file_path)
+        remove_macro_references(file_path)
 
 
 @app.command(hidden=True)
