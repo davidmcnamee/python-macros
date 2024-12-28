@@ -43,7 +43,7 @@ def is_absolute_import_that_doesnt_reference_macros(
         isinstance(node, ast.ImportFrom)
         and node.level == 0
         and not (
-            "__macros__.types" in ast.unparse(node)
+            "__macro__.types" in ast.unparse(node)
             and generated_name in [alias.name for alias in node.names]
         )
     ) or isinstance(node, ast.Import)

@@ -4,7 +4,7 @@
 
 Inspired by Rust procedural macros, this package creates a macro system for Python. You can define a macro by writing a function that accepts a string of code and returns another string of code.
 
-Your expanded macro is written to a `__macros__.py` file in the same directory, and automatically imported.
+Your expanded macro is written to a `__macro__` file in the same directory, and automatically imported.
 
 You don't need to add another build step, just run your code as normal. As soon as it runs, your IDE and type checker will start to pass.
 

@@ -1,6 +1,6 @@
-from .__macros__.types import GenStuff
-from .__macros__.types import gen_my_func
-from .__macros__.types import gen_my_other_func
+from .__macro__.types import GenStuff
+from .__macro__.types import gen_my_func
+from .__macro__.types import gen_my_other_func
 import re
 
 from typed_macro import macro

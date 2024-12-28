@@ -31,7 +31,7 @@ def write_to_runtime_file_and_import(
     )
 
     new_module = _import_from_path(
-        f".__macros__.{func_or_class.__name__}",
+        f".__macro__.{func_or_class.__name__}",
         runtime_file.as_posix(),
     )
     return getattr(new_module, get_generated_name(func_or_class))
@@ -43,7 +43,7 @@ def write_to_stub_file(stub_file: Path, templ_module: ast.Module) -> None:
 
 
 def get_or_create_macro_dir(frame: FrameType) -> Path:
-    macro_dir = Path(frame.f_code.co_filename).parent / "__macros__"
+    macro_dir = Path(frame.f_code.co_filename).parent / "__macro__"
     if not macro_dir.exists():
         macro_dir.mkdir(parents=True)
     return macro_dir

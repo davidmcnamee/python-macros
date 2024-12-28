@@ -75,7 +75,7 @@ def _maybe_insert_imports_to_macro_type_stubs(
             node, generated_name
         ) and re.search(r"(\W|^)" + generated_name + r"(\W|$)", ast.unparse(node)):
             return  # early return if already imported
-    yield 0, f"from .__macros__.types import {generated_name}\n"
+    yield 0, f"from .__macro__.types import {generated_name}\n"
 
 
 def _maybe_insert_gen_kwarg_to_callsite_func_decorator(

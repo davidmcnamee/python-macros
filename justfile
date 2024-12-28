@@ -5,7 +5,7 @@ test:
     uv run python -m tests.proc_macro
 
 itest:
-    watchexec -e py -i '*/__macros__/*' just test
+    watchexec -e py -i '*/__macro__/*' just test
 
 publish:
     rm -rf *.egg-info dist
